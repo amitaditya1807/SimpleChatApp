@@ -46,6 +46,7 @@
             margin: 5px;
             border-radius: 10px;
             max-width: 70%;
+            word-wrap: break-word;
         }
 
         .me {
@@ -78,6 +79,12 @@
             color: white;
             border: none;
         }
+
+        small {
+            display: block;
+            margin-top: 5px;
+            color: gray;
+        }
     </style>
 
 </head>
@@ -105,8 +112,13 @@
 
         <div class="inputBox">
             <input id="messageInput" placeholder="Message">
+
+            <input type="file" id="imageInput" accept="image/*">
+
             <button onclick="send()">Send</button>
         </div>
+
+        <small>Max image size: 3 MB</small>
 
     </div>
 
@@ -120,17 +132,18 @@
         let user = null;
         let room = null;
 
-        // IMPORTANT: store connection promise
         let connectionStarted = connection.start();
 
         /* RECEIVE MESSAGE */
-        connection.on("ReceiveMessage", (u, msg) => {
+        connection.on("ReceiveMessage", (u, msg, image) => {
+
             let li = document.createElement("li");
 
-            if (u === user) li.className = "me";
-            else li.className = "other";
+            li.innerHTML = `<b>${u}:</b> ${msg || ""}`;
 
-            li.innerText = u + ": " + msg;
+            if (image) {
+                li.innerHTML += `<br><img src="${image}" style="max-width:200px;border-radius:10px;">`;
+            }
 
             document.getElementById("messages").appendChild(li);
 
@@ -155,13 +168,37 @@
             showChat();
         }
 
-        /* SEND */
+        /* SEND (with 3MB limit) */
         function send() {
             let msg = document.getElementById("messageInput").value;
-            if (!msg) return;
+            let file = document.getElementById("imageInput").files[0];
 
-            connection.invoke("SendMessage", room, user, msg);
+            if (!msg && !file) return;
+
+            if (file) {
+
+                // 🔥 3 MB limit
+                if (file.size > 3 * 1024 * 1024) {
+                    alert("Image must be less than 3 MB");
+                    return;
+                }
+
+                let reader = new FileReader();
+
+                reader.onload = function (e) {
+                    let base64 = e.target.result;
+
+                    connection.invoke("SendMessage", room, user, msg, base64);
+                };
+
+                reader.readAsDataURL(file);
+
+            } else {
+                connection.invoke("SendMessage", room, user, msg, "");
+            }
+
             document.getElementById("messageInput").value = "";
+            document.getElementById("imageInput").value = "";
         }
 
         /* SHOW UI */
@@ -189,7 +226,7 @@
             document.getElementById("loginDiv").style.display = "block";
         }
 
-        /* AUTO RESTORE AFTER REFRESH (FIXED) */
+        /* AUTO RESTORE */
         window.onload = function () {
             user = localStorage.getItem("chatUser");
             room = localStorage.getItem("chatRoom");
@@ -202,10 +239,6 @@
                 });
             }
         };
-    </script>
-
-</body>
-</html>
     </script>
 
 </body>
