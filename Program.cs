@@ -18,14 +18,12 @@ var app = builder.Build();
 
 app.UseCors();
 
-// serve frontend
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-// map hub
 app.MapHub<ChatHub>("/chat");
 
-// VERY IMPORTANT FOR RENDER
+// Render compatibility
 var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
 app.Urls.Add($"http://0.0.0.0:{port}");
 

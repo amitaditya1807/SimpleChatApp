@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>SimpleChat</title>
+    <title>Chat App</title>
 
     <style>
         body {
@@ -11,7 +11,7 @@
             margin: 0;
         }
 
-        /* Login box */
+        /* Login */
         #loginDiv {
             width: 300px;
             margin: 120px auto;
@@ -37,7 +37,7 @@
             justify-content: space-between;
         }
 
-        /* Messages box */
+        /* Messages */
         #messages {
             list-style: none;
             padding: 10px;
@@ -46,28 +46,26 @@
             background: white;
         }
 
-        /* Message bubble */
         li {
             padding: 10px;
             margin: 5px;
             border-radius: 10px;
             max-width: 70%;
-            clear: both;
         }
 
-        /* My message */
         .me {
             background: #dcf8c6;
             float: right;
+            clear: both;
         }
 
-        /* Other message */
         .other {
             background: #f1f0f0;
             float: left;
+            clear: both;
         }
 
-        /* Input box */
+        /* Input */
         .inputBox {
             display: flex;
             padding: 10px;
@@ -77,29 +75,25 @@
         input {
             flex: 1;
             padding: 10px;
-            border-radius: 5px;
             border: 1px solid #ccc;
+            border-radius: 5px;
         }
 
         button {
             margin-left: 10px;
-            padding: 10px 15px;
+            padding: 10px;
             background: #0084ff;
             color: white;
             border: none;
             border-radius: 5px;
-            cursor: pointer;
         }
-
-            button:hover {
-                background: #006fd6;
-            }
     </style>
 
 </head>
 
 <body>
 
+    <!-- LOGIN -->
     <div id="loginDiv">
         <h3>Join Chat</h3>
         <input id="usernameInput" placeholder="Username"><br><br>
@@ -107,6 +101,7 @@
         <button onclick="join()">Join</button>
     </div>
 
+    <!-- CHAT -->
     <div id="chatDiv">
 
         <div class="header">
@@ -120,7 +115,7 @@
         <ul id="messages"></ul>
 
         <div class="inputBox">
-            <input id="messageInput" placeholder="Type message...">
+            <input id="messageInput" placeholder="Message">
             <button onclick="send()">Send</button>
         </div>
 
@@ -136,13 +131,14 @@
         let user = null;
         let room = null;
 
+        /* RECEIVE MESSAGE */
         connection.on("ReceiveMessage", (u, msg) => {
             let li = document.createElement("li");
 
             if (u === user) {
-                li.classList.add("me");
+                li.className = "me";
             } else {
-                li.classList.add("other");
+                li.className = "other";
             }
 
             li.innerText = u + ": " + msg;
@@ -155,21 +151,23 @@
 
         connection.start();
 
+        /* JOIN */
         function join() {
             user = document.getElementById("usernameInput").value;
             room = document.getElementById("roomInput").value;
 
             if (!user || !room) return;
 
+            // SAVE STATE (IMPORTANT FIX)
+            localStorage.setItem("chatUser", user);
+            localStorage.setItem("chatRoom", room);
+
             connection.invoke("JoinRoom", room, user);
 
-            document.getElementById("loginDiv").style.display = "none";
-            document.getElementById("chatDiv").style.display = "block";
-
-            document.getElementById("currentUser").innerText = user;
-            document.getElementById("currentRoom").innerText = room;
+            showChat();
         }
 
+        /* SEND */
         function send() {
             let msg = document.getElementById("messageInput").value;
             if (!msg) return;
@@ -178,16 +176,44 @@
             document.getElementById("messageInput").value = "";
         }
 
+        /* SHOW CHAT UI */
+        function showChat() {
+            document.getElementById("loginDiv").style.display = "none";
+            document.getElementById("chatDiv").style.display = "block";
+
+            document.getElementById("currentUser").innerText = user;
+            document.getElementById("currentRoom").innerText = room;
+        }
+
+        /* LOGOUT */
         function logout() {
             connection.invoke("LeaveRoom", room, user);
+
+            localStorage.removeItem("chatUser");
+            localStorage.removeItem("chatRoom");
 
             user = null;
             room = null;
 
             document.getElementById("messages").innerHTML = "";
+
             document.getElementById("chatDiv").style.display = "none";
             document.getElementById("loginDiv").style.display = "block";
         }
+
+        /* AUTO RESTORE ON REFRESH (KEY FIX) */
+        window.onload = function () {
+            user = localStorage.getItem("chatUser");
+            room = localStorage.getItem("chatRoom");
+
+            if (user && room) {
+                showChat();
+
+                connection.start().then(() => {
+                    connection.invoke("JoinRoom", room, user);
+                });
+            }
+        };
     </script>
 
 </body>
