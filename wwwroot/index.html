@@ -1,30 +1,132 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>Amit'sChat App</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <meta charset="UTF-8">
+    <title>SimpleChat</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f0f2f5;
+            margin: 0;
+        }
+
+        /* Login box */
+        #loginDiv {
+            width: 300px;
+            margin: 120px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Chat container */
+        #chatDiv {
+            display: none;
+            max-width: 700px;
+            margin: auto;
+        }
+
+        /* Header */
+        .header {
+            background: #0084ff;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Messages box */
+        #messages {
+            list-style: none;
+            padding: 10px;
+            height: 400px;
+            overflow-y: auto;
+            background: white;
+        }
+
+        /* Message bubble */
+        li {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 10px;
+            max-width: 70%;
+            clear: both;
+        }
+
+        /* My message */
+        .me {
+            background: #dcf8c6;
+            float: right;
+        }
+
+        /* Other message */
+        .other {
+            background: #f1f0f0;
+            float: left;
+        }
+
+        /* Input box */
+        .inputBox {
+            display: flex;
+            padding: 10px;
+            background: white;
+        }
+
+        input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            margin-left: 10px;
+            padding: 10px 15px;
+            background: #0084ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+            button:hover {
+                background: #006fd6;
+            }
+    </style>
+
 </head>
+
 <body>
 
     <div id="loginDiv">
-        <input id="usernameInput" placeholder="Username" />
-        <input id="roomInput" placeholder="Room" />
+        <h3>Join Chat</h3>
+        <input id="usernameInput" placeholder="Username"><br><br>
+        <input id="roomInput" placeholder="Room"><br><br>
         <button onclick="join()">Join</button>
     </div>
 
-    <div id="chatDiv" style="display:none;">
-        <p><b>User:</b> <span id="currentUser"></span></p>
-        <p><b>Room:</b> <span id="currentRoom"></span></p>
+    <div id="chatDiv">
 
-        <button onclick="logout()">Logout</button>
-
-        <br><br>
-
-        <input id="messageInput" placeholder="Message" />
-        <button onclick="send()">Send</button>
+        <div class="header">
+            <div>
+                User: <span id="currentUser"></span> |
+                Room: <span id="currentRoom"></span>
+            </div>
+            <button onclick="logout()">Logout</button>
+        </div>
 
         <ul id="messages"></ul>
+
+        <div class="inputBox">
+            <input id="messageInput" placeholder="Type message...">
+            <button onclick="send()">Send</button>
+        </div>
+
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 
     <script>
         let connection = new signalR.HubConnectionBuilder()
@@ -34,86 +136,58 @@
         let user = null;
         let room = null;
 
-        // receive messages
-        connection.on("ReceiveMessage", function (user, message) {
+        connection.on("ReceiveMessage", (u, msg) => {
             let li = document.createElement("li");
-            li.textContent = user + ": " + message;
+
+            if (u === user) {
+                li.classList.add("me");
+            } else {
+                li.classList.add("other");
+            }
+
+            li.innerText = u + ": " + msg;
+
             document.getElementById("messages").appendChild(li);
+
+            document.getElementById("messages").scrollTop =
+                document.getElementById("messages").scrollHeight;
         });
 
-        // start connection
         connection.start();
 
-        // join room
         function join() {
             user = document.getElementById("usernameInput").value;
             room = document.getElementById("roomInput").value;
 
-            if (!user || !room) {
-                alert("Enter username and room");
-                return;
-            }
-
-            localStorage.setItem("chatUser", user);
-            localStorage.setItem("chatRoom", room);
+            if (!user || !room) return;
 
             connection.invoke("JoinRoom", room, user);
 
             document.getElementById("loginDiv").style.display = "none";
             document.getElementById("chatDiv").style.display = "block";
 
-            document.getElementById("currentUser").textContent = user;
-            document.getElementById("currentRoom").textContent = room;
+            document.getElementById("currentUser").innerText = user;
+            document.getElementById("currentRoom").innerText = room;
         }
 
-        // send message
         function send() {
-            let message = document.getElementById("messageInput").value;
+            let msg = document.getElementById("messageInput").value;
+            if (!msg) return;
 
-            if (!message) return;
-
-            connection.invoke("SendMessage", room, user, message);
-
+            connection.invoke("SendMessage", room, user, msg);
             document.getElementById("messageInput").value = "";
         }
 
-        // logout
         function logout() {
             connection.invoke("LeaveRoom", room, user);
-
-            localStorage.removeItem("chatUser");
-            localStorage.removeItem("chatRoom");
 
             user = null;
             room = null;
 
             document.getElementById("messages").innerHTML = "";
-
             document.getElementById("chatDiv").style.display = "none";
             document.getElementById("loginDiv").style.display = "block";
-
-            document.getElementById("usernameInput").value = "";
-            document.getElementById("roomInput").value = "";
         }
-
-        // auto login (if stored)
-        window.onload = function () {
-            let savedUser = localStorage.getItem("chatUser");
-            let savedRoom = localStorage.getItem("chatRoom");
-
-            if (savedUser && savedRoom) {
-                user = savedUser;
-                room = savedRoom;
-
-                connection.invoke("JoinRoom", room, user);
-
-                document.getElementById("loginDiv").style.display = "none";
-                document.getElementById("chatDiv").style.display = "block";
-
-                document.getElementById("currentUser").textContent = user;
-                document.getElementById("currentRoom").textContent = room;
-            }
-        };
     </script>
 
 </body>
