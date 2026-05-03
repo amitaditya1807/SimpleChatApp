@@ -11,24 +11,20 @@
             margin: 0;
         }
 
-        /* Login */
         #loginDiv {
             width: 300px;
             margin: 120px auto;
             padding: 20px;
             background: white;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        /* Chat container */
         #chatDiv {
             display: none;
             max-width: 700px;
             margin: auto;
         }
 
-        /* Header */
         .header {
             background: #0084ff;
             color: white;
@@ -37,7 +33,6 @@
             justify-content: space-between;
         }
 
-        /* Messages */
         #messages {
             list-style: none;
             padding: 10px;
@@ -65,7 +60,6 @@
             clear: both;
         }
 
-        /* Input */
         .inputBox {
             display: flex;
             padding: 10px;
@@ -75,8 +69,6 @@
         input {
             flex: 1;
             padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
         }
 
         button {
@@ -85,7 +77,6 @@
             background: #0084ff;
             color: white;
             border: none;
-            border-radius: 5px;
         }
     </style>
 
@@ -93,7 +84,6 @@
 
 <body>
 
-    <!-- LOGIN -->
     <div id="loginDiv">
         <h3>Join Chat</h3>
         <input id="usernameInput" placeholder="Username"><br><br>
@@ -101,7 +91,6 @@
         <button onclick="join()">Join</button>
     </div>
 
-    <!-- CHAT -->
     <div id="chatDiv">
 
         <div class="header">
@@ -131,15 +120,15 @@
         let user = null;
         let room = null;
 
+        // IMPORTANT: store connection promise
+        let connectionStarted = connection.start();
+
         /* RECEIVE MESSAGE */
         connection.on("ReceiveMessage", (u, msg) => {
             let li = document.createElement("li");
 
-            if (u === user) {
-                li.className = "me";
-            } else {
-                li.className = "other";
-            }
+            if (u === user) li.className = "me";
+            else li.className = "other";
 
             li.innerText = u + ": " + msg;
 
@@ -149,8 +138,6 @@
                 document.getElementById("messages").scrollHeight;
         });
 
-        connection.start();
-
         /* JOIN */
         function join() {
             user = document.getElementById("usernameInput").value;
@@ -158,11 +145,12 @@
 
             if (!user || !room) return;
 
-            // SAVE STATE (IMPORTANT FIX)
             localStorage.setItem("chatUser", user);
             localStorage.setItem("chatRoom", room);
 
-            connection.invoke("JoinRoom", room, user);
+            connectionStarted.then(() => {
+                connection.invoke("JoinRoom", room, user);
+            });
 
             showChat();
         }
@@ -176,7 +164,7 @@
             document.getElementById("messageInput").value = "";
         }
 
-        /* SHOW CHAT UI */
+        /* SHOW UI */
         function showChat() {
             document.getElementById("loginDiv").style.display = "none";
             document.getElementById("chatDiv").style.display = "block";
@@ -201,7 +189,7 @@
             document.getElementById("loginDiv").style.display = "block";
         }
 
-        /* AUTO RESTORE ON REFRESH (KEY FIX) */
+        /* AUTO RESTORE AFTER REFRESH (FIXED) */
         window.onload = function () {
             user = localStorage.getItem("chatUser");
             room = localStorage.getItem("chatRoom");
@@ -209,8 +197,15 @@
             if (user && room) {
                 showChat();
 
-                connection.start().then(() => {
+                connectionStarted.then(() => {
                     connection.invoke("JoinRoom", room, user);
+                });
+            }
+        };
+    </script>
+
+</body>
+</html>voke("JoinRoom", room, user);
                 });
             }
         };
