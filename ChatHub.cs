@@ -8,23 +8,27 @@ namespace ChatServer
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, room);
 
+            var time = DateTime.UtcNow.ToString("o");
+
             await Clients.Group(room).SendAsync(
                 "ReceiveMessage",
                 "System",
                 $"{user} joined the room",
                 "",
-                DateTime.Now.ToString("hh:mm tt")
+                time
             );
         }
 
         public async Task SendMessage(string room, string user, string message, string imageBase64)
         {
+            var time = DateTime.UtcNow.ToString("o");
+
             await Clients.Group(room).SendAsync(
                 "ReceiveMessage",
                 user,
                 message ?? "",
                 imageBase64 ?? "",
-                DateTime.Now.ToString("hh:mm tt")
+                time
             );
         }
 
@@ -32,12 +36,14 @@ namespace ChatServer
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, room);
 
+            var time = DateTime.UtcNow.ToString("o");
+
             await Clients.Group(room).SendAsync(
                 "ReceiveMessage",
                 "System",
                 $"{user} left the room",
                 "",
-                DateTime.Now.ToString("hh:mm tt")
+                time
             );
         }
     }

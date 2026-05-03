@@ -21,18 +21,11 @@
             box-sizing: border-box;
         }
 
-        html, body {
-            width: 100%;
-            height: 100%;
-        }
-
         body {
             margin: 0;
-            font-family: Segoe UI, Arial, sans-serif;
-            background: linear-gradient(135deg, var(--bg1), var(--bg2));
+            font-family: Segoe UI, Arial;
+            background: linear-gradient(135deg,var(--bg1),var(--bg2));
             color: var(--text);
-            -webkit-text-size-adjust: 100%;
-            overscroll-behavior: none;
         }
 
         .page {
@@ -43,6 +36,7 @@
             padding: 16px;
         }
 
+        /* LOGIN */
         .login {
             width: 100%;
             max-width: 380px;
@@ -50,12 +44,7 @@
             border-radius: 18px;
             background: var(--card);
             border: 1px solid var(--border);
-            backdrop-filter: blur(18px);
         }
-
-            .login h2 {
-                margin: 0 0 18px 0;
-            }
 
         .input {
             width: 100%;
@@ -69,31 +58,27 @@
             outline: none;
         }
 
-            .input::placeholder {
-                color: var(--muted);
-            }
-
         .btn {
             width: 100%;
             padding: 14px;
             border: none;
             border-radius: 12px;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            background: linear-gradient(135deg,var(--accent),var(--accent2));
             color: white;
-            font-weight: 700;
+            font-weight: bold;
             cursor: pointer;
         }
 
+        /* CHAT */
         .card {
-            width: min(950px, 100%);
-            height: min(88vh, 900px);
+            width: min(950px,100%);
+            height: min(88vh,900px);
             display: flex;
             flex-direction: column;
             border-radius: 22px;
             background: var(--card);
             border: 1px solid var(--border);
             overflow: hidden;
-            backdrop-filter: blur(18px);
         }
 
         .hidden {
@@ -101,29 +86,16 @@
         }
 
         .topbar {
-            padding: 14px 16px;
+            padding: 14px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            gap: 12px;
             border-bottom: 1px solid var(--border);
-            background: rgba(255,255,255,0.04);
         }
-
-            .topbar button {
-                padding: 10px 14px;
-                border: none;
-                border-radius: 12px;
-                background: rgba(255,255,255,0.12);
-                color: white;
-                cursor: pointer;
-                flex-shrink: 0;
-            }
 
         .messages {
             flex: 1;
             overflow-y: auto;
-            padding: 16px;
+            padding: 14px;
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -131,7 +103,6 @@
 
         .msg {
             display: flex;
-            width: 100%;
         }
 
         .me {
@@ -147,42 +118,26 @@
         }
 
         .bubble {
-            max-width: min(75%, 620px);
-            padding: 12px 14px;
-            border-radius: 16px;
+            max-width: 75%;
+            padding: 12px;
+            border-radius: 14px;
             background: rgba(255,255,255,0.12);
             word-break: break-word;
-            line-height: 1.4;
         }
 
         .me .bubble {
             background: rgba(34,197,94,0.25);
-            border-top-right-radius: 6px;
-        }
-
-        .other .bubble {
-            border-top-left-radius: 6px;
         }
 
         .system .bubble {
-            max-width: 92%;
             font-size: 12px;
             color: var(--muted);
             background: rgba(255,255,255,0.06);
-            border-radius: 999px;
-            text-align: center;
-        }
-
-        .sender {
-            font-weight: 700;
-            margin-bottom: 4px;
         }
 
         .image {
-            display: block;
             margin-top: 8px;
-            max-width: 240px;
-            width: 100%;
+            max-width: 220px;
             border-radius: 12px;
         }
 
@@ -191,117 +146,53 @@
             font-size: 11px;
             color: #cbd5e1;
             opacity: 0.8;
-            text-align: right;
         }
 
+        /* COMPOSER */
         .composer {
             display: flex;
             align-items: center;
             gap: 10px;
             padding: 12px;
             border-top: 1px solid var(--border);
-            background: rgba(15, 23, 42, 0.96);
-            width: 100%;
+            background: rgba(15, 23, 42, 0.95);
         }
 
             .composer input[type="text"] {
                 flex: 1;
                 min-width: 0;
-                padding: 12px 14px;
-                border-radius: 999px;
+                padding: 12px;
+                border-radius: 20px;
                 border: none;
                 outline: none;
                 font-size: 16px;
-                background: rgba(255,255,255,0.08);
-                color: white;
             }
 
-                .composer input[type="text"]::placeholder {
-                    color: var(--muted);
-                }
-
             .composer input[type="file"] {
-                width: 160px;
-                max-width: 160px;
                 font-size: 12px;
-                color: var(--muted);
-                flex-shrink: 0;
+                max-width: 150px;
             }
 
             .composer button {
-                flex-shrink: 0;
-                padding: 12px 16px;
-                border-radius: 999px;
+                padding: 12px 14px;
+                border-radius: 20px;
                 border: none;
                 background: var(--accent);
                 color: white;
-                font-weight: 700;
+                font-weight: bold;
                 cursor: pointer;
-                white-space: nowrap;
             }
 
-        @media (max-width: 720px) {
-            .page {
-                padding: 0;
-                align-items: stretch;
-            }
-
-            .login {
-                width: calc(100% - 24px);
-                margin: auto;
-            }
-
+        /* MOBILE */
+        @media (max-width:720px) {
             .card {
                 width: 100%;
                 height: 100vh;
                 border-radius: 0;
             }
 
-            .topbar {
-                padding: 12px 14px;
-            }
-
-            .messages {
-                padding: 12px;
-            }
-
-            .bubble {
-                max-width: 88%;
-            }
-
-            .composer {
-                display: grid;
-                grid-template-columns: 1fr auto;
-                grid-template-areas:
-                    "msg send"
-                    "file file";
-                gap: 8px;
-                align-items: center;
-            }
-
-                .composer input[type="text"] {
-                    grid-area: msg;
-                    width: 100%;
-                }
-
-                .composer button {
-                    grid-area: send;
-                    padding: 12px 14px;
-                }
-
-                .composer input[type="file"] {
-                    grid-area: file;
-                    width: 100%;
-                    max-width: none;
-                    display: block;
-                    background: rgba(255,255,255,0.08);
-                    padding: 10px;
-                    border-radius: 14px;
-                    border: 1px solid var(--border);
-                }
-
-            .image {
-                max-width: 200px;
+            .composer input[type="file"] {
+                display: none;
             }
         }
     </style>
@@ -310,6 +201,7 @@
 <body>
 
     <div class="page">
+
         <div id="login" class="login">
             <h2>Simple Chat</h2>
             <input class="input" id="username" placeholder="Username">
@@ -318,10 +210,9 @@
         </div>
 
         <div id="chat" class="card hidden">
+
             <div class="topbar">
-                <div>
-                    <b id="u"></b> | <span id="r"></span>
-                </div>
+                <div><b id="u"></b> | <span id="r"></span></div>
                 <button onclick="logout()">Logout</button>
             </div>
 
@@ -332,155 +223,68 @@
                 <input id="img" type="file" accept="image/*">
                 <button onclick="send()">Send</button>
             </div>
+
         </div>
+
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+
     <script>
         const conn = new signalR.HubConnectionBuilder()
             .withUrl("/chat")
-            .withAutomaticReconnect([0, 2000, 5000, 10000, 20000])
+            .withAutomaticReconnect()
             .build();
 
-        let user = "";
-        let room = "";
-        let started = null;
+        let user = "", room = "";
+        let started = conn.start();
 
-        function startConnection() {
-            if (!started) {
-                started = conn.start().catch(err => {
-                    started = null;
-                    throw err;
-                });
-            }
-            return started;
-        }
+        conn.on("ReceiveMessage", (u, msg, img, time) => {
 
-        async function waitForConnected(timeoutMs = 15000) {
-            const start = Date.now();
-            while (conn.state !== signalR.HubConnectionState.Connected) {
-                if (Date.now() - start > timeoutMs) {
-                    throw new Error("Connection not ready");
-                }
-                await new Promise(r => setTimeout(r, 200));
-            }
-        }
-
-        async function ensureConnected() {
-            if (conn.state === signalR.HubConnectionState.Connected) return;
-
-            if (conn.state === signalR.HubConnectionState.Disconnected) {
-                await startConnection().catch(() => { });
-            }
-
-            await waitForConnected();
-        }
-
-        function scrollBottom() {
-            const box = document.getElementById("messages");
-            box.scrollTop = box.scrollHeight;
-        }
-
-        function renderMessage(sender, msg, img, time) {
             const div = document.createElement("div");
 
-            if (sender === "System") {
+            if (u === "System") {
                 div.className = "msg system";
-                const bubble = document.createElement("div");
-                bubble.className = "bubble";
-                bubble.textContent = msg;
-                div.appendChild(bubble);
-            } else {
-                const me = user && sender && sender.toLowerCase() === user.toLowerCase();
+                div.innerHTML = `<div class="bubble">${msg}</div>`;
+            }
+            else {
+                const me = u.toLowerCase() === user.toLowerCase();
                 div.className = "msg " + (me ? "me" : "other");
 
-                const bubble = document.createElement("div");
-                bubble.className = "bubble";
-
-                if (!me) {
-                    const senderEl = document.createElement("div");
-                    senderEl.className = "sender";
-                    senderEl.textContent = sender;
-                    bubble.appendChild(senderEl);
+                // ✅ FIXED TIME (UTC → LOCAL)
+                let formattedTime = "";
+                if (time) {
+                    formattedTime = new Date(time).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
                 }
 
-                const msgEl = document.createElement("div");
-                msgEl.textContent = msg || "";
-                bubble.appendChild(msgEl);
-
-                if (img) {
-                    const imageEl = document.createElement("img");
-                    imageEl.className = "image";
-                    imageEl.src = img;
-                    imageEl.alt = "shared image";
-                    bubble.appendChild(imageEl);
-                }
-
-                const timeEl = document.createElement("div");
-                timeEl.className = "time";
-                timeEl.textContent = time || "";
-                bubble.appendChild(timeEl);
-
-                div.appendChild(bubble);
+                div.innerHTML = `
+            <div class="bubble">
+                <b>${u}</b><br>
+                ${msg || ""}
+                ${img ? `<br><img class="image" src="${img}">` : ""}
+                <div class="time">${formattedTime}</div>
+            </div>`;
             }
 
             document.getElementById("messages").appendChild(div);
-            scrollBottom();
-        }
-
-        conn.on("ReceiveMessage", (sender, msg, img, time) => {
-            renderMessage(sender, msg, img, time);
-        });
-
-        conn.onreconnecting(() => {
-            console.log("Reconnecting...");
-        });
-
-        conn.onreconnected(async () => {
-            console.log("Reconnected");
-
-            if (user && room) {
-                try {
-                    await conn.invoke("JoinRoom", room, user);
-                } catch (e) {
-                    console.error("Rejoin failed:", e);
-                }
-            }
-        });
-
-        conn.onclose(async (err) => {
-            console.log("Connection closed", err);
-
-            if (user && room) {
-                setTimeout(async () => {
-                    try {
-                        started = null;
-                        await startConnection();
-                        await conn.invoke("JoinRoom", room, user);
-                    } catch (e) {
-                        console.error("Restart after close failed:", e);
-                    }
-                }, 2000);
-            }
+            document.getElementById("messages").scrollTop =
+                document.getElementById("messages").scrollHeight;
         });
 
         function handleKey(e) {
-            if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
+            if (e.key === "Enter") {
                 send();
             }
         }
 
         async function join() {
-            user = document.getElementById("username").value.trim();
-            room = document.getElementById("room").value.trim();
+            user = document.getElementById("username").value;
+            room = document.getElementById("room").value;
 
-            if (!user || !room) return;
-
-            localStorage.setItem("u", user);
-            localStorage.setItem("r", room);
-
-            await ensureConnected();
+            await started;
             await conn.invoke("JoinRoom", room, user);
 
             document.getElementById("login").classList.add("hidden");
@@ -491,73 +295,28 @@
         }
 
         async function send() {
-            const msg = document.getElementById("msg").value.trim();
-            const file = document.getElementById("img").files[0];
+            let msg = document.getElementById("msg").value;
+            let file = document.getElementById("img").files[0];
 
-            if (!msg && !file) return;
+            let base64 = "";
 
-            try {
-                await ensureConnected();
-
-                let base64 = "";
-
-                if (file) {
-                    if (file.size > 3 * 1024 * 1024) {
-                        alert("Max 3MB allowed");
-                        return;
-                    }
-
-                    base64 = await new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onload = e => resolve(e.target.result);
-                        reader.onerror = reject;
-                        reader.readAsDataURL(file);
-                    });
-                }
-
-                await conn.invoke("SendMessage", room, user, msg || "", base64);
-
-                document.getElementById("msg").value = "";
-                document.getElementById("img").value = "";
-            } catch (err) {
-                console.error("Send failed:", err);
-                alert("Message failed to send.");
+            if (file) {
+                base64 = await new Promise(r => {
+                    let fr = new FileReader();
+                    fr.onload = e => r(e.target.result);
+                    fr.readAsDataURL(file);
+                });
             }
+
+            await conn.invoke("SendMessage", room, user, msg || "", base64);
+
+            document.getElementById("msg").value = "";
+            document.getElementById("img").value = "";
         }
 
         async function logout() {
-            try {
-                if (room && user && conn.state === signalR.HubConnectionState.Connected) {
-                    await conn.invoke("LeaveRoom", room, user);
-                }
-            } catch { }
-
-            localStorage.removeItem("u");
-            localStorage.removeItem("r");
             location.reload();
         }
-
-        window.addEventListener("load", async () => {
-            const savedUser = localStorage.getItem("u");
-            const savedRoom = localStorage.getItem("r");
-
-            if (savedUser && savedRoom) {
-                user = savedUser;
-                room = savedRoom;
-
-                document.getElementById("login").classList.add("hidden");
-                document.getElementById("chat").classList.remove("hidden");
-                document.getElementById("u").innerText = user;
-                document.getElementById("r").innerText = room;
-
-                try {
-                    await ensureConnected();
-                    await conn.invoke("JoinRoom", room, user);
-                } catch (e) {
-                    console.error("Auto-join failed:", e);
-                }
-            }
-        });
     </script>
 
 </body>
