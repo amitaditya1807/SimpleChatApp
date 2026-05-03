@@ -7,6 +7,7 @@ namespace ChatServer
         public async Task JoinRoom(string room, string user)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, room);
+
             await Clients.Group(room)
                 .SendAsync("ReceiveMessage", "System", $"{user} joined", "");
         }
@@ -20,6 +21,7 @@ namespace ChatServer
         public async Task LeaveRoom(string room, string user)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, room);
+
             await Clients.Group(room)
                 .SendAsync("ReceiveMessage", "System", $"{user} left", "");
         }
