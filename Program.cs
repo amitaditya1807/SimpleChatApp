@@ -2,10 +2,9 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ✅ IMPORTANT: allow large image messages
 builder.Services.AddSignalR(options =>
 {
-    options.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10 MB
+    options.MaximumReceiveMessageSize = 10 * 1024 * 1024;
 });
 
 builder.Services.AddCors(options =>

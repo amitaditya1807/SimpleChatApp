@@ -9,8 +9,8 @@
         :root {
             --bg1: #0f172a;
             --bg2: #111827;
-            --card: rgba(255, 255, 255, 0.08);
-            --border: rgba(255, 255, 255, 0.12);
+            --card: rgba(255,255,255,0.08);
+            --border: rgba(255,255,255,0.12);
             --accent: #7c3aed;
             --accent2: #06b6d4;
             --text: #e5e7eb;
@@ -173,6 +173,11 @@
             text-align: center;
         }
 
+        .sender {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
         .image {
             display: block;
             margin-top: 8px;
@@ -235,7 +240,6 @@
                 white-space: nowrap;
             }
 
-        /* Mobile */
         @media (max-width: 720px) {
             .page {
                 padding: 0;
@@ -256,10 +260,6 @@
             .topbar {
                 padding: 12px 14px;
             }
-
-                .topbar b {
-                    font-size: 14px;
-                }
 
             .messages {
                 padding: 12px;
@@ -310,7 +310,6 @@
 <body>
 
     <div class="page">
-
         <div id="login" class="login">
             <h2>Simple Chat</h2>
             <input class="input" id="username" placeholder="Username">
@@ -334,48 +333,135 @@
                 <button onclick="send()">Send</button>
             </div>
         </div>
-
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
-
     <script>
         const conn = new signalR.HubConnectionBuilder()
             .withUrl("/chat")
-            .withAutomaticReconnect()
+            .withAutomaticReconnect([0, 2000, 5000, 10000, 20000])
             .build();
 
         let user = "";
         let room = "";
-        let started = conn.start();
+        let started = null;
+
+        function startConnection() {
+            if (!started) {
+                started = conn.start().catch(err => {
+                    started = null;
+                    throw err;
+                });
+            }
+            return started;
+        }
+
+        async function waitForConnected(timeoutMs = 15000) {
+            const start = Date.now();
+            while (conn.state !== signalR.HubConnectionState.Connected) {
+                if (Date.now() - start > timeoutMs) {
+                    throw new Error("Connection not ready");
+                }
+                await new Promise(r => setTimeout(r, 200));
+            }
+        }
+
+        async function ensureConnected() {
+            if (conn.state === signalR.HubConnectionState.Connected) return;
+
+            if (conn.state === signalR.HubConnectionState.Disconnected) {
+                await startConnection().catch(() => { });
+            }
+
+            await waitForConnected();
+        }
 
         function scrollBottom() {
             const box = document.getElementById("messages");
             box.scrollTop = box.scrollHeight;
         }
 
-        conn.on("ReceiveMessage", (u, msg, img, time) => {
+        function renderMessage(sender, msg, img, time) {
             const div = document.createElement("div");
 
-            if (u === "System") {
+            if (sender === "System") {
                 div.className = "msg system";
-                div.innerHTML = `<div class="bubble">${msg}</div>`;
+                const bubble = document.createElement("div");
+                bubble.className = "bubble";
+                bubble.textContent = msg;
+                div.appendChild(bubble);
             } else {
-                const me = user && u && u.toLowerCase() === user.toLowerCase();
+                const me = user && sender && sender.toLowerCase() === user.toLowerCase();
                 div.className = "msg " + (me ? "me" : "other");
 
-                div.innerHTML = `
-                <div class="bubble">
-                    <b>${u}</b><br>
-                    ${msg || ""}
-                    ${img ? `<img class="image" src="${img}" alt="shared image">` : ""}
-                    <div class="time">${time || ""}</div>
-                </div>
-            `;
+                const bubble = document.createElement("div");
+                bubble.className = "bubble";
+
+                if (!me) {
+                    const senderEl = document.createElement("div");
+                    senderEl.className = "sender";
+                    senderEl.textContent = sender;
+                    bubble.appendChild(senderEl);
+                }
+
+                const msgEl = document.createElement("div");
+                msgEl.textContent = msg || "";
+                bubble.appendChild(msgEl);
+
+                if (img) {
+                    const imageEl = document.createElement("img");
+                    imageEl.className = "image";
+                    imageEl.src = img;
+                    imageEl.alt = "shared image";
+                    bubble.appendChild(imageEl);
+                }
+
+                const timeEl = document.createElement("div");
+                timeEl.className = "time";
+                timeEl.textContent = time || "";
+                bubble.appendChild(timeEl);
+
+                div.appendChild(bubble);
             }
 
             document.getElementById("messages").appendChild(div);
             scrollBottom();
+        }
+
+        conn.on("ReceiveMessage", (sender, msg, img, time) => {
+            renderMessage(sender, msg, img, time);
+        });
+
+        conn.onreconnecting(() => {
+            console.log("Reconnecting...");
+        });
+
+        conn.onreconnected(async () => {
+            console.log("Reconnected");
+
+            if (user && room) {
+                try {
+                    await conn.invoke("JoinRoom", room, user);
+                } catch (e) {
+                    console.error("Rejoin failed:", e);
+                }
+            }
+        });
+
+        conn.onclose(async (err) => {
+            console.log("Connection closed", err);
+
+            if (user && room) {
+                setTimeout(async () => {
+                    try {
+                        started = null;
+                        await startConnection();
+                        await conn.invoke("JoinRoom", room, user);
+                    } catch (e) {
+                        console.error("Restart after close failed:", e);
+                    }
+                }, 2000);
+            }
         });
 
         function handleKey(e) {
@@ -391,7 +477,10 @@
 
             if (!user || !room) return;
 
-            await started;
+            localStorage.setItem("u", user);
+            localStorage.setItem("r", room);
+
+            await ensureConnected();
             await conn.invoke("JoinRoom", room, user);
 
             document.getElementById("login").classList.add("hidden");
@@ -407,35 +496,68 @@
 
             if (!msg && !file) return;
 
-            await started;
+            try {
+                await ensureConnected();
 
-            let base64 = "";
+                let base64 = "";
 
-            if (file) {
-                if (file.size > 3 * 1024 * 1024) {
-                    alert("Max 3MB allowed");
-                    return;
+                if (file) {
+                    if (file.size > 3 * 1024 * 1024) {
+                        alert("Max 3MB allowed");
+                        return;
+                    }
+
+                    base64 = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = e => resolve(e.target.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
                 }
 
-                base64 = await new Promise(resolve => {
-                    const reader = new FileReader();
-                    reader.onload = e => resolve(e.target.result);
-                    reader.readAsDataURL(file);
-                });
+                await conn.invoke("SendMessage", room, user, msg || "", base64);
+
+                document.getElementById("msg").value = "";
+                document.getElementById("img").value = "";
+            } catch (err) {
+                console.error("Send failed:", err);
+                alert("Message failed to send.");
             }
-
-            await conn.invoke("SendMessage", room, user, msg || "", base64);
-
-            document.getElementById("msg").value = "";
-            document.getElementById("img").value = "";
         }
 
         async function logout() {
             try {
-                await conn.invoke("LeaveRoom", room, user);
+                if (room && user && conn.state === signalR.HubConnectionState.Connected) {
+                    await conn.invoke("LeaveRoom", room, user);
+                }
             } catch { }
+
+            localStorage.removeItem("u");
+            localStorage.removeItem("r");
             location.reload();
         }
+
+        window.addEventListener("load", async () => {
+            const savedUser = localStorage.getItem("u");
+            const savedRoom = localStorage.getItem("r");
+
+            if (savedUser && savedRoom) {
+                user = savedUser;
+                room = savedRoom;
+
+                document.getElementById("login").classList.add("hidden");
+                document.getElementById("chat").classList.remove("hidden");
+                document.getElementById("u").innerText = user;
+                document.getElementById("r").innerText = room;
+
+                try {
+                    await ensureConnected();
+                    await conn.invoke("JoinRoom", room, user);
+                } catch (e) {
+                    console.error("Auto-join failed:", e);
+                }
+            }
+        });
     </script>
 
 </body>
