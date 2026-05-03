@@ -2,7 +2,8 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>SimpleChat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Simple Chat</title>
 
     <style>
         :root {
@@ -19,11 +20,22 @@
             --system: rgba(255,255,255,0.08);
         }
 
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
         body {
             margin: 0;
-            font-family: "Segoe UI";
+            font-family: "Segoe UI", Arial, sans-serif;
+            -webkit-text-size-adjust: 100%;
             background: radial-gradient(circle at top left, rgba(124,58,237,0.35), transparent 40%), radial-gradient(circle at bottom right, rgba(6,182,212,0.25), transparent 40%), linear-gradient(135deg, var(--bg1), var(--bg2));
             color: var(--text);
+            overscroll-behavior: none;
         }
 
         .page {
@@ -31,7 +43,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 16px;
         }
 
         .card {
@@ -44,44 +56,104 @@
             background: var(--card);
             backdrop-filter: blur(18px);
             overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
         }
 
         .login {
-            width: 360px;
+            width: 100%;
+            max-width: 360px;
             padding: 24px;
             border-radius: 20px;
             background: var(--card);
             border: 1px solid var(--border);
             backdrop-filter: blur(18px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        .title {
+            margin: 0 0 8px 0;
+            font-size: 30px;
+            letter-spacing: -0.03em;
+        }
+
+        .subtitle {
+            margin: 0 0 20px 0;
+            color: var(--muted);
+            line-height: 1.5;
         }
 
         .input {
             width: 100%;
-            padding: 14px;
+            padding: 14px 16px;
             margin: 8px 0;
             border-radius: 12px;
             border: 1px solid var(--border);
             background: rgba(255,255,255,0.06);
             color: white;
             outline: none;
+            font-size: 16px; /* prevents mobile zoom */
         }
 
+            .input::placeholder {
+                color: #94a3b8;
+            }
+
         .btn {
-            width: 100%;
-            padding: 14px;
-            border-radius: 12px;
             border: none;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
             color: white;
-            font-weight: bold;
+            padding: 14px 18px;
+            border-radius: 12px;
             cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            transition: transform 0.15s ease, opacity 0.15s ease;
+        }
+
+            .btn:hover {
+                transform: translateY(-1px);
+                opacity: 0.95;
+            }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+        }
+
+        .btn-dark {
+            background: rgba(255,255,255,0.10);
+            border: 1px solid var(--border);
+        }
+
+        .hidden {
+            display: none !important;
         }
 
         .topbar {
             padding: 16px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            gap: 12px;
             border-bottom: 1px solid var(--border);
+        }
+
+        .room-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .room-name {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .room-meta {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.2;
         }
 
         .messages {
@@ -95,6 +167,7 @@
 
         .msg {
             display: flex;
+            width: 100%;
         }
 
         .me {
@@ -111,72 +184,128 @@
 
         .bubble {
             max-width: 70%;
-            padding: 12px;
+            padding: 12px 14px;
             border-radius: 14px;
             font-size: 14px;
-            word-wrap: break-word;
+            word-break: break-word;
+            line-height: 1.45;
         }
 
         .me .bubble {
             background: rgba(34,197,94,0.25);
+            border-top-right-radius: 6px;
         }
 
         .other .bubble {
             background: rgba(255,255,255,0.12);
+            border-top-left-radius: 6px;
         }
 
         .system .bubble {
             background: rgba(255,255,255,0.06);
             font-size: 12px;
             color: var(--muted);
+            border-radius: 999px;
+            padding: 8px 14px;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .time {
+            margin-top: 6px;
+            font-size: 11px;
+            color: #cbd5e1;
+            opacity: 0.8;
+            text-align: right;
         }
 
         .composer {
             display: flex;
-            padding: 12px;
+            align-items: center;
             gap: 10px;
+            padding: 12px;
             border-top: 1px solid var(--border);
+            background: rgba(15, 23, 42, 0.92);
+            position: sticky;
+            bottom: 0;
         }
 
             .composer input {
                 flex: 1;
-                padding: 12px;
+                min-width: 0;
+                padding: 12px 14px;
                 border-radius: 20px;
                 border: none;
                 outline: none;
+                font-size: 16px; /* prevents mobile zoom */
             }
 
             .composer button {
+                flex-shrink: 0;
+                white-space: nowrap;
                 padding: 12px 18px;
                 border-radius: 20px;
                 border: none;
                 background: var(--accent);
                 color: white;
                 cursor: pointer;
+                font-weight: 700;
             }
+
+        @media (max-width: 720px) {
+            .page {
+                padding: 10px;
+                align-items: stretch;
+            }
+
+            .card {
+                width: 100%;
+                height: calc(100vh - 20px);
+                border-radius: 18px;
+            }
+
+            .topbar {
+                padding: 14px;
+            }
+
+            .room-name {
+                font-size: 18px;
+            }
+
+            .bubble {
+                max-width: 86%;
+            }
+
+            .composer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+                .composer button {
+                    width: 100%;
+                }
+        }
     </style>
 </head>
-
 <body>
 
     <div class="page">
 
-        <!-- LOGIN -->
         <div id="login" class="login">
-            <h2>Simple Chat</h2>
+            <h2 class="title">Simple Chat</h2>
+            <p class="subtitle">A lightweight real-time chat room with a clean UI.</p>
             <input class="input" id="username" placeholder="Username">
             <input class="input" id="room" placeholder="Room">
-            <button class="btn" onclick="join()">Join</button>
+            <button class="btn btn-primary" style="width:100%;" onclick="join()">Join</button>
         </div>
 
-        <!-- CHAT -->
-        <div id="chat" class="card" style="display:none">
-
+        <div id="chat" class="card hidden">
             <div class="topbar">
-                <div>
-                    <b id="u"></b> | <span id="r"></span>
+                <div class="room-info">
+                    <div class="room-name" id="u"></div>
+                    <div class="room-meta">Room: <span id="r"></span></div>
                 </div>
-                <button onclick="logout()">Logout</button>
+                <button class="btn btn-dark" onclick="logout()">Logout</button>
             </div>
 
             <div id="messages" class="messages"></div>
@@ -185,103 +314,149 @@
                 <input id="msg" placeholder="Type message...">
                 <button onclick="send()">Send</button>
             </div>
-
         </div>
 
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
-
     <script>
         const conn = new signalR.HubConnectionBuilder()
             .withUrl("/chat")
+            .withAutomaticReconnect()
             .build();
 
         let user = "";
         let room = "";
-        let started = conn.start();
+        let started = null;
 
-        conn.on("ReceiveMessage", (u, msg, img, time) => {
-
-            let div = document.createElement("div");
-
-            if (u === "System") {
-                div.className = "msg system";
-                div.innerHTML = `<div class="bubble">${msg}</div>`;
-            } else {
-
-                let me = u.toLowerCase() === user.toLowerCase();
-
-                div.className = "msg " + (me ? "me" : "other");
-
-                div.innerHTML = `
-                <div class="bubble">
-                    <b>${u}</b><br>
-                    ${msg}
-                    <div style="font-size:11px;color:#aaa;margin-top:5px">${time}</div>
-                </div>
-            `;
+        function ensureStarted() {
+            if (!started) {
+                started = conn.start().catch(err => {
+                    console.error("SignalR start failed:", err);
+                    started = null;
+                    throw err;
+                });
             }
+            return started;
+        }
 
-            document.getElementById("messages").appendChild(div);
-            document.getElementById("messages").scrollTop =
-                document.getElementById("messages").scrollHeight;
-        });
+        function scrollBottom() {
+            const box = document.getElementById("messages");
+            box.scrollTop = box.scrollHeight;
+        }
 
-        async function join() {
-            user = document.getElementById("username").value;
-            room = document.getElementById("room").value;
-
-            if (!user || !room) return;
-
-            localStorage.setItem("u", user);
-            localStorage.setItem("r", room);
-
-            await started;
-            await conn.invoke("JoinRoom", room, user);
-
-            document.getElementById("login").style.display = "none";
-            document.getElementById("chat").style.display = "flex";
-
+        function showChat() {
+            document.getElementById("login").classList.add("hidden");
+            document.getElementById("chat").classList.remove("hidden");
             document.getElementById("u").innerText = user;
             document.getElementById("r").innerText = room;
         }
 
-        async function send() {
-            let m = document.getElementById("msg").value;
-            if (!m) return;
+        function showLogin() {
+            document.getElementById("chat").classList.add("hidden");
+            document.getElementById("login").classList.remove("hidden");
+        }
 
-            await conn.invoke("SendMessage", room, user, m);
+        conn.on("ReceiveMessage", (sender, msg, img, time) => {
+            const row = document.createElement("div");
+
+            if (sender === "System") {
+                row.className = "msg system";
+                row.innerHTML = `<div class="bubble">${msg}</div>`;
+            } else {
+                const me = user && sender && sender.toLowerCase() === user.toLowerCase();
+                row.className = "msg " + (me ? "me" : "other");
+                row.innerHTML = `
+                    <div class="bubble">
+                        <b>${sender}</b><br>
+                        ${msg || ""}
+                        <div class="time">${time || ""}</div>
+                    </div>
+                `;
+            }
+
+            document.getElementById("messages").appendChild(row);
+            scrollBottom();
+        });
+
+        conn.onreconnected(async () => {
+            if (user && room) {
+                try {
+                    await conn.invoke("JoinRoom", room, user);
+                } catch (e) {
+                    console.error("Rejoin failed:", e);
+                }
+            }
+        });
+
+        async function join() {
+            const username = document.getElementById("username").value.trim();
+            const roomName = document.getElementById("room").value.trim();
+
+            if (!username || !roomName) return;
+
+            user = username;
+            room = roomName;
+
+            localStorage.setItem("u", user);
+            localStorage.setItem("r", room);
+
+            await ensureStarted();
+            await conn.invoke("JoinRoom", room, user);
+
+            showChat();
+        }
+
+        async function send() {
+            const message = document.getElementById("msg").value.trim();
+            if (!message) return;
+
+            await ensureStarted();
+            await conn.invoke("SendMessage", room, user, message);
 
             document.getElementById("msg").value = "";
         }
 
         async function logout() {
-            await conn.invoke("LeaveRoom", room, user);
-            localStorage.clear();
+            try {
+                if (room && user && conn.state === signalR.HubConnectionState.Connected) {
+                    await conn.invoke("LeaveRoom", room, user);
+                }
+            } catch (e) {
+                console.error("Leave failed:", e);
+            }
 
-            document.getElementById("chat").style.display = "none";
-            document.getElementById("login").style.display = "block";
+            localStorage.removeItem("u");
+            localStorage.removeItem("r");
+
+            user = "";
+            room = "";
+            document.getElementById("messages").innerHTML = "";
+            document.getElementById("username").value = "";
+            document.getElementById("room").value = "";
+
+            showLogin();
         }
 
-        window.onload = async () => {
-            let u = localStorage.getItem("u");
-            let r = localStorage.getItem("r");
+        window.addEventListener("load", async () => {
+            const savedUser = localStorage.getItem("u");
+            const savedRoom = localStorage.getItem("r");
 
-            if (u && r) {
-                user = u;
-                room = r;
+            if (savedUser && savedRoom) {
+                user = savedUser;
+                room = savedRoom;
+                showChat();
 
-                await started;
-                await conn.invoke("JoinRoom", room, user);
-
-                document.getElementById("login").style.display = "none";
-                document.getElementById("chat").style.display = "flex";
-
-                document.getElementById("u").innerText = user;
-                document.getElementById("r").innerText = room;
+                try {
+                    await ensureStarted();
+                    await conn.invoke("JoinRoom", room, user);
+                } catch (e) {
+                    console.error("Auto-join failed:", e);
+                }
+            } else {
+                showLogin();
             }
-        };
+        });
     </script>
 
 </body>

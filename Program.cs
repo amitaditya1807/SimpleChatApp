@@ -7,9 +7,11 @@ builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
+    {
         policy.AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowAnyOrigin());
+              .AllowAnyOrigin();
+    });
 });
 
 var app = builder.Build();
@@ -20,6 +22,7 @@ app.UseStaticFiles();
 
 app.MapHub<ChatHub>("/chat");
 
+// IMPORTANT: Render + local compatibility
 var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
 app.Urls.Add($"http://0.0.0.0:{port}");
 
