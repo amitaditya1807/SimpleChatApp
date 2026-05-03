@@ -22,8 +22,8 @@ namespace ChatServer
             await Clients.Group(room).SendAsync(
                 "ReceiveMessage",
                 user,
-                message,
-                imageBase64,
+                message ?? "",
+                imageBase64 ?? "",
                 DateTime.Now.ToString("hh:mm tt")
             );
         }

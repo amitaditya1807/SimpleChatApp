@@ -9,8 +9,8 @@
         :root {
             --bg1: #0f172a;
             --bg2: #111827;
-            --card: rgba(255, 255, 255, 0.08);
-            --border: rgba(255, 255, 255, 0.12);
+            --card: rgba(255,255,255,0.08);
+            --border: rgba(255,255,255,0.12);
             --text: #e5e7eb;
             --muted: #9ca3af;
             --accent: #7c3aed;
@@ -18,35 +18,32 @@
         }
 
         * {
-            box-sizing: border-box;
+            box-sizing: border-box
         }
 
         body {
             margin: 0;
-            font-family: "Segoe UI", Arial, sans-serif;
-            -webkit-text-size-adjust: 100%;
-            background: radial-gradient(circle at top left, rgba(124,58,237,0.35), transparent 40%), radial-gradient(circle at bottom right, rgba(6,182,212,0.25), transparent 40%), linear-gradient(135deg, var(--bg1), var(--bg2));
+            font-family: Segoe UI;
+            background: linear-gradient(135deg,var(--bg1),var(--bg2));
             color: var(--text);
-            overscroll-behavior: none;
         }
 
         .page {
             min-height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             padding: 16px;
         }
 
         .card {
-            width: min(900px, 100%);
-            height: min(85vh, 850px);
+            width: min(900px,100%);
+            height: min(85vh,850px);
             display: flex;
             flex-direction: column;
             border-radius: 20px;
-            border: 1px solid var(--border);
             background: var(--card);
-            backdrop-filter: blur(18px);
+            border: 1px solid var(--border);
             overflow: hidden;
         }
 
@@ -61,40 +58,34 @@
 
         .input {
             width: 100%;
-            padding: 14px 16px;
+            padding: 14px;
             margin: 8px 0;
             border-radius: 12px;
             border: 1px solid var(--border);
             background: rgba(255,255,255,0.06);
             color: white;
-            outline: none;
             font-size: 16px;
+            outline: none;
         }
-
-            .input::placeholder {
-                color: #94a3b8;
-            }
 
         .btn {
             width: 100%;
             padding: 14px;
-            border-radius: 12px;
             border: none;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 12px;
+            background: linear-gradient(135deg,var(--accent),var(--accent2));
             color: white;
             font-weight: bold;
-            cursor: pointer;
         }
 
         .hidden {
-            display: none !important;
+            display: none !important
         }
 
         .topbar {
             padding: 14px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
             border-bottom: 1px solid var(--border);
         }
 
@@ -108,23 +99,23 @@
         }
 
         .msg {
-            display: flex;
+            display: flex
         }
 
         .me {
-            justify-content: flex-end;
+            justify-content: flex-end
         }
 
         .other {
-            justify-content: flex-start;
+            justify-content: flex-start
         }
 
         .system {
-            justify-content: center;
+            justify-content: center
         }
 
         .bubble {
-            max-width: 70%;
+            max-width: 75%;
             padding: 12px;
             border-radius: 14px;
             background: rgba(255,255,255,0.12);
@@ -141,21 +132,10 @@
             background: rgba(255,255,255,0.06);
         }
 
-        .time {
-            margin-top: 6px;
-            font-size: 11px;
-            color: #cbd5e1;
-            opacity: 0.8;
-            text-align: right;
-        }
-
         .image {
-            display: block;
-            max-width: 220px;
-            width: 100%;
-            border-radius: 12px;
             margin-top: 8px;
-            border: 1px solid rgba(255,255,255,0.12);
+            max-width: 220px;
+            border-radius: 12px;
         }
 
         .composer {
@@ -168,7 +148,6 @@
 
             .composer input[type="text"] {
                 flex: 1;
-                min-width: 0;
                 padding: 12px;
                 border-radius: 20px;
                 border: none;
@@ -177,9 +156,8 @@
             }
 
             .composer input[type="file"] {
-                max-width: 180px;
-                color: var(--muted);
                 font-size: 12px;
+                color: var(--muted);
             }
 
             .composer button {
@@ -192,36 +170,6 @@
                 cursor: pointer;
                 flex-shrink: 0;
             }
-
-        @media (max-width: 720px) {
-            .page {
-                padding: 10px;
-                align-items: stretch;
-            }
-
-            .card {
-                width: 100%;
-                height: calc(100vh - 20px);
-                border-radius: 18px;
-            }
-
-            .composer {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-                .composer input[type="file"] {
-                    max-width: 100%;
-                }
-
-                .composer button {
-                    width: 100%;
-                }
-
-            .bubble {
-                max-width: 86%;
-            }
-        }
     </style>
 </head>
 
@@ -249,7 +197,7 @@
 
             <div class="composer">
                 <input id="msg" type="text" placeholder="Type message..." onkeydown="handleKey(event)">
-                <input id="imageInput" type="file" accept="image/*">
+                <input id="img" type="file" accept="image/*">
                 <button onclick="send()">Send</button>
             </div>
 
@@ -258,6 +206,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+
     <script>
         const conn = new signalR.HubConnectionBuilder()
             .withUrl("/chat")
@@ -266,177 +215,92 @@
 
         let user = "";
         let room = "";
-        let started = null;
+        let started = conn.start();
 
-        function ensureStarted() {
-            if (!started) {
-                started = conn.start().catch(err => {
-                    console.error("SignalR start failed:", err);
-                    started = null;
-                    throw err;
-                });
-            }
-            return started;
-        }
+        conn.on("ReceiveMessage", (u, msg, img, time) => {
 
-        function scrollBottom() {
-            const box = document.getElementById("messages");
-            box.scrollTop = box.scrollHeight;
-        }
+            const div = document.createElement("div");
 
-        function showChat() {
-            document.getElementById("login").classList.add("hidden");
-            document.getElementById("chat").classList.remove("hidden");
-            document.getElementById("u").innerText = user;
-            document.getElementById("r").innerText = room;
-        }
-
-        function showLogin() {
-            document.getElementById("chat").classList.add("hidden");
-            document.getElementById("login").classList.remove("hidden");
-        }
-
-        function renderMessage(sender, msg, image, time) {
-            const row = document.createElement("div");
-
-            if (sender === "System") {
-                row.className = "msg system";
-                row.innerHTML = `<div class="bubble">${msg}</div>`;
+            if (u === "System") {
+                div.className = "msg system";
+                div.innerHTML = `<div class="bubble">${msg}</div>`;
             } else {
-                const me = user && sender && sender.toLowerCase() === user.toLowerCase();
-                row.className = "msg " + (me ? "me" : "other");
+                const me = u.toLowerCase() === user.toLowerCase();
+                div.className = "msg " + (me ? "me" : "other");
 
-                const safeMsg = msg || "";
-                const safeTime = time || "";
-
-                row.innerHTML = `
+                div.innerHTML = `
                 <div class="bubble">
-                    <b>${sender}</b><br>
-                    ${safeMsg}
-                    ${image ? `<img class="image" src="${image}" alt="shared image">` : ""}
-                    <div class="time">${safeTime}</div>
+                    <b>${u}</b><br>
+                    ${msg || ""}
+                    ${img ? `<br><img class="image" src="${img}">` : ""}
                 </div>
             `;
             }
 
-            document.getElementById("messages").appendChild(row);
-            scrollBottom();
-        }
-
-        conn.on("ReceiveMessage", (sender, msg, image, time) => {
-            renderMessage(sender, msg, image, time);
+            document.getElementById("messages").appendChild(div);
+            document.getElementById("messages").scrollTop =
+                document.getElementById("messages").scrollHeight;
         });
 
-        conn.onreconnected(async () => {
-            if (user && room) {
-                try {
-                    await conn.invoke("JoinRoom", room, user);
-                } catch (e) {
-                    console.error("Rejoin failed:", e);
-                }
-            }
-        });
-
-        async function join() {
-            const username = document.getElementById("username").value.trim();
-            const roomName = document.getElementById("room").value.trim();
-
-            if (!username || !roomName) return;
-
-            user = username;
-            room = roomName;
-
-            localStorage.setItem("u", user);
-            localStorage.setItem("r", room);
-
-            await ensureStarted();
-            await conn.invoke("JoinRoom", room, user);
-
-            showChat();
-        }
-
-        async function send() {
-            const message = document.getElementById("msg").value.trim();
-            const file = document.getElementById("imageInput").files[0];
-
-            if (!message && !file) return;
-
-            await ensureStarted();
-
-            if (file) {
-                if (file.size > 3 * 1024 * 1024) {
-                    alert("Max image size is 3 MB");
-                    return;
-                }
-
-                const base64 = await readFileAsDataURL(file);
-                await conn.invoke("SendMessage", room, user, message, base64);
-            } else {
-                await conn.invoke("SendMessage", room, user, message, "");
-            }
-
-            document.getElementById("msg").value = "";
-            document.getElementById("imageInput").value = "";
-        }
-
-        function readFileAsDataURL(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = e => resolve(e.target.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function handleKey(event) {
-            if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault();
+        function handleKey(e) {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
                 send();
             }
         }
 
-        async function logout() {
-            try {
-                if (room && user && conn.state === signalR.HubConnectionState.Connected) {
-                    await conn.invoke("LeaveRoom", room, user);
-                }
-            } catch (e) {
-                console.error("Leave failed:", e);
-            }
+        async function join() {
+            user = document.getElementById("username").value;
+            room = document.getElementById("room").value;
 
-            localStorage.removeItem("u");
-            localStorage.removeItem("r");
+            if (!user || !room) return;
 
-            user = "";
-            room = "";
-            document.getElementById("messages").innerHTML = "";
-            document.getElementById("username").value = "";
-            document.getElementById("room").value = "";
-            document.getElementById("msg").value = "";
-            document.getElementById("imageInput").value = "";
+            await started;
+            await conn.invoke("JoinRoom", room, user);
 
-            showLogin();
+            document.getElementById("login").classList.add("hidden");
+            document.getElementById("chat").classList.remove("hidden");
+
+            document.getElementById("u").innerText = user;
+            document.getElementById("r").innerText = room;
         }
 
-        window.addEventListener("load", async () => {
-            const savedUser = localStorage.getItem("u");
-            const savedRoom = localStorage.getItem("r");
+        async function send() {
+            const msg = document.getElementById("msg").value;
+            const file = document.getElementById("img").files[0];
 
-            if (savedUser && savedRoom) {
-                user = savedUser;
-                room = savedRoom;
-                showChat();
+            if (!msg && !file) return;
 
-                try {
-                    await ensureStarted();
-                    await conn.invoke("JoinRoom", room, user);
-                } catch (e) {
-                    console.error("Auto-join failed:", e);
+            await started;
+
+            let base64 = "";
+
+            if (file) {
+                if (file.size > 3 * 1024 * 1024) {
+                    alert("Max 3MB allowed");
+                    return;
                 }
-            } else {
-                showLogin();
+
+                base64 = await new Promise(res => {
+                    const r = new FileReader();
+                    r.onload = e => res(e.target.result);
+                    r.readAsDataURL(file);
+                });
             }
-        });
+
+            await conn.invoke("SendMessage", room, user, msg || "", base64);
+
+            document.getElementById("msg").value = "";
+            document.getElementById("img").value = "";
+        }
+
+        async function logout() {
+            try {
+                await conn.invoke("LeaveRoom", room, user);
+            } catch { }
+
+            location.reload();
+        }
     </script>
 
 </body>

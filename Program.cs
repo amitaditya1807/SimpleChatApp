@@ -2,7 +2,11 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSignalR();
+// ✅ IMPORTANT: allow large image messages
+builder.Services.AddSignalR(options =>
+{
+    options.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10 MB
+});
 
 builder.Services.AddCors(options =>
 {
@@ -22,7 +26,6 @@ app.UseStaticFiles();
 
 app.MapHub<ChatHub>("/chat");
 
-// IMPORTANT: Render + local compatibility
 var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
 app.Urls.Add($"http://0.0.0.0:{port}");
 
