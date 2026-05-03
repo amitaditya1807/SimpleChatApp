@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>Simple Chat</title>
 
     <style>
@@ -23,14 +23,13 @@
 
         body {
             margin: 0;
-            font-family: Segoe UI, Arial;
+            font-family: Segoe UI;
             background: linear-gradient(135deg,var(--bg1),var(--bg2));
             color: var(--text);
         }
 
-        /* LOGIN */
         .page {
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -38,50 +37,49 @@
         }
 
         .login {
-            width: 100%;
-            max-width: 380px;
-            padding: 24px;
-            border-radius: 18px;
+            width: 320px;
+            padding: 20px;
             background: var(--card);
             border: 1px solid var(--border);
+            border-radius: 16px;
         }
 
         .input {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             margin: 8px 0;
-            border-radius: 12px;
+            border-radius: 10px;
             border: 1px solid var(--border);
             background: rgba(255,255,255,0.06);
             color: white;
             font-size: 16px;
+            outline: none;
         }
 
         .btn {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             background: linear-gradient(135deg,var(--accent),var(--accent2));
             color: white;
             font-weight: bold;
             cursor: pointer;
         }
 
-        /* CHAT */
         .card {
-            width: min(950px,100%);
-            height: min(88vh,900px);
+            width: min(900px,100%);
+            height: 90vh;
             display: flex;
             flex-direction: column;
-            border-radius: 22px;
+            border-radius: 20px;
             background: var(--card);
             border: 1px solid var(--border);
             overflow: hidden;
         }
 
         .hidden {
-            display: none !important;
+            display: none;
         }
 
         .topbar {
@@ -89,12 +87,12 @@
             display: flex;
             justify-content: space-between;
             border-bottom: 1px solid var(--border);
+            align-items: center;
         }
 
-        /* MESSAGES */
         .messages {
             flex: 1;
-            overflow-y: auto;
+            overflow: auto;
             padding: 14px;
             display: flex;
             flex-direction: column;
@@ -118,8 +116,8 @@
         }
 
         .bubble {
-            max-width: 75%;
-            padding: 12px;
+            max-width: 70%;
+            padding: 10px 12px;
             border-radius: 14px;
             background: rgba(255,255,255,0.12);
             word-break: break-word;
@@ -132,59 +130,70 @@
         .system .bubble {
             font-size: 12px;
             color: var(--muted);
-            background: rgba(255,255,255,0.06);
-        }
-
-        .image {
-            margin-top: 8px;
-            max-width: 220px;
-            border-radius: 12px;
+            text-align: center;
         }
 
         .time {
-            margin-top: 6px;
             font-size: 11px;
-            color: #cbd5e1;
-            opacity: 0.8;
+            opacity: 0.7;
+            margin-top: 4px;
+            text-align: right;
         }
 
-        /* COMPOSER */
         .composer {
             display: flex;
-            align-items: center;
             gap: 10px;
-            padding: 12px;
+            padding: 10px;
             border-top: 1px solid var(--border);
+            align-items: center;
             background: rgba(15,23,42,0.95);
         }
 
-            .composer input[type="text"] {
+            .composer input[type=text] {
                 flex: 1;
                 min-width: 0;
-                padding: 12px;
+                padding: 10px;
                 border-radius: 20px;
                 border: none;
                 outline: none;
                 font-size: 16px;
             }
 
-            .composer input[type="file"] {
-                font-size: 12px;
+            .composer input[type=file] {
+                width: 150px;
                 max-width: 150px;
+                flex-shrink: 0;
+                color: var(--muted);
+                font-size: 12px;
             }
 
             .composer button {
-                padding: 12px 14px;
-                border-radius: 20px;
+                padding: 10px 14px;
                 border: none;
+                border-radius: 20px;
                 background: var(--accent);
                 color: white;
-                font-weight: bold;
                 cursor: pointer;
+                flex-shrink: 0;
+                white-space: nowrap;
             }
 
-        /* MOBILE FIX */
-        @media (max-width:720px) {
+        img {
+            max-width: 160px;
+            margin-top: 6px;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 720px) {
+            .page {
+                padding: 0;
+                align-items: stretch;
+            }
+
+            .login {
+                width: calc(100% - 24px);
+                margin: auto;
+            }
 
             .card {
                 width: 100%;
@@ -193,32 +202,28 @@
             }
 
             .composer {
-                display: grid;
-                grid-template-columns: 1fr auto;
-                grid-template-areas:
-                    "msg send"
-                    "file file";
-                gap: 8px;
+                flex-wrap: wrap;
             }
 
-                .composer input[type="text"] {
-                    grid-area: msg;
+                .composer input[type=text] {
+                    width: 100%;
+                    flex: 1 1 100%;
+                }
+
+                .composer input[type=file] {
+                    width: 100%;
+                    max-width: none;
+                    flex: 1 1 100%;
                 }
 
                 .composer button {
-                    grid-area: send;
+                    width: 100%;
+                    flex: 1 1 100%;
                 }
 
-                .composer input[type="file"] {
-                    grid-area: file;
-                    width: 100%;
-                    padding: 10px;
-                    border-radius: 12px;
-                    border: 1px solid var(--border);
-                    background: rgba(255,255,255,0.08);
-                    color: var(--muted);
-                    max-width: none;
-                }
+            .bubble {
+                max-width: 85%;
+            }
         }
     </style>
 </head>
@@ -228,7 +233,6 @@
     <div class="page">
 
         <div id="login" class="login">
-            <h2>Simple Chat</h2>
             <input class="input" id="username" placeholder="Username">
             <input class="input" id="room" placeholder="Room">
             <button class="btn" onclick="join()">Join</button>
@@ -238,13 +242,13 @@
 
             <div class="topbar">
                 <div><b id="u"></b> | <span id="r"></span></div>
-                <button onclick="logout()">Logout</button>
+                <button onclick="logout()" style="width:auto;padding:6px 12px;border:none;border-radius:10px;background:rgba(255,255,255,0.12);color:white;cursor:pointer;">Logout</button>
             </div>
 
             <div id="messages" class="messages"></div>
 
             <div class="composer">
-                <input id="msg" type="text" placeholder="Type message..." onkeydown="if(event.key==='Enter') send()">
+                <input id="msg" type="text" placeholder="Type message..." onkeydown="handleKey(event)">
                 <input id="img" type="file" accept="image/*">
                 <button onclick="send()">Send</button>
             </div>
@@ -258,51 +262,102 @@
     <script>
         const conn = new signalR.HubConnectionBuilder()
             .withUrl("/chat")
-            .withAutomaticReconnect()
+            .withAutomaticReconnect([0, 2000, 5000, 10000, 20000])
             .build();
 
-        let user = "", room = "";
-        let started = conn.start();
+        let user = "";
+        let room = "";
+        let started = null;
+
+        function startConnection() {
+            if (!started) {
+                started = conn.start().catch(err => {
+                    started = null;
+                    throw err;
+                });
+            }
+            return started;
+        }
+
+        async function ensureConnected() {
+            if (conn.state === signalR.HubConnectionState.Connected) return;
+
+            if (conn.state === signalR.HubConnectionState.Disconnected) {
+                await startConnection().catch(() => { });
+            }
+
+            const begin = Date.now();
+            while (conn.state !== signalR.HubConnectionState.Connected) {
+                if (Date.now() - begin > 15000) {
+                    throw new Error("Connection not ready");
+                }
+                await new Promise(r => setTimeout(r, 200));
+            }
+        }
+
+        function scrollBottom() {
+            const box = document.getElementById("messages");
+            box.scrollTop = box.scrollHeight;
+        }
 
         conn.on("ReceiveMessage", (u, msg, img, time) => {
-
             const div = document.createElement("div");
 
             if (u === "System") {
                 div.className = "msg system";
                 div.innerHTML = `<div class="bubble">${msg}</div>`;
-            }
-            else {
-                const me = u.toLowerCase() === user.toLowerCase();
+            } else {
+                const me = u === user;
+                const t = time
+                    ? new Date(Number(time)).toLocaleTimeString([], {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                    })
+                    : "";
+
                 div.className = "msg " + (me ? "me" : "other");
-
-                let formattedTime = "";
-                if (time) {
-                    formattedTime = new Date(time).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                }
-
                 div.innerHTML = `
-            <div class="bubble">
-                <b>${u}</b><br>
-                ${msg || ""}
-                ${img ? `<br><img class="image" src="${img}">` : ""}
-                <div class="time">${formattedTime}</div>
-            </div>`;
+                <div class="bubble">
+                    <b>${u}</b><br>
+                    ${msg || ""}
+                    ${img ? `<br><img src="${img}">` : ""}
+                    <div class="time">${t}</div>
+                </div>
+            `;
             }
 
-            const box = document.getElementById("messages");
-            box.appendChild(div);
-            box.scrollTop = box.scrollHeight;
+            document.getElementById("messages").appendChild(div);
+            scrollBottom();
         });
 
-        async function join() {
-            user = document.getElementById("username").value;
-            room = document.getElementById("room").value;
+        conn.onreconnected(async () => {
+            if (user && room) {
+                try {
+                    await conn.invoke("JoinRoom", room, user);
+                } catch (e) {
+                    console.error("Rejoin failed:", e);
+                }
+            }
+        });
 
-            await started;
+        function handleKey(event) {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                send();
+            }
+        }
+
+        async function join() {
+            user = document.getElementById("username").value.trim();
+            room = document.getElementById("room").value.trim();
+
+            if (!user || !room) return;
+
+            localStorage.setItem("u", user);
+            localStorage.setItem("r", room);
+
+            await ensureConnected();
             await conn.invoke("JoinRoom", room, user);
 
             document.getElementById("login").classList.add("hidden");
@@ -313,15 +368,25 @@
         }
 
         async function send() {
-            let msg = document.getElementById("msg").value;
-            let file = document.getElementById("img").files[0];
+            const msg = document.getElementById("msg").value.trim();
+            const file = document.getElementById("img").files[0];
+
+            if (!msg && !file) return;
+
+            await ensureConnected();
 
             let base64 = "";
 
             if (file) {
-                base64 = await new Promise(r => {
-                    let fr = new FileReader();
-                    fr.onload = e => r(e.target.result);
+                if (file.size > 3 * 1024 * 1024) {
+                    alert("Max 3MB allowed");
+                    return;
+                }
+
+                base64 = await new Promise((resolve, reject) => {
+                    const fr = new FileReader();
+                    fr.onload = e => resolve(e.target.result);
+                    fr.onerror = reject;
                     fr.readAsDataURL(file);
                 });
             }
@@ -332,9 +397,50 @@
             document.getElementById("img").value = "";
         }
 
-        function logout() {
-            location.reload();
+        async function logout() {
+            try {
+                if (room && user && conn.state === signalR.HubConnectionState.Connected) {
+                    await conn.invoke("LeaveRoom", room, user);
+                }
+            } catch { }
+
+            try {
+                await conn.stop();
+            } catch { }
+
+            user = "";
+            room = "";
+            started = null;
+
+            localStorage.removeItem("u");
+            localStorage.removeItem("r");
+
+            document.getElementById("messages").innerHTML = "";
+            document.getElementById("chat").classList.add("hidden");
+            document.getElementById("login").classList.remove("hidden");
         }
+
+        window.addEventListener("load", async () => {
+            const savedUser = localStorage.getItem("u");
+            const savedRoom = localStorage.getItem("r");
+
+            if (savedUser && savedRoom) {
+                user = savedUser;
+                room = savedRoom;
+
+                document.getElementById("login").classList.add("hidden");
+                document.getElementById("chat").classList.remove("hidden");
+                document.getElementById("u").innerText = user;
+                document.getElementById("r").innerText = room;
+
+                try {
+                    await ensureConnected();
+                    await conn.invoke("JoinRoom", room, user);
+                } catch (e) {
+                    console.error("Auto-join failed:", e);
+                }
+            }
+        });
     </script>
 
 </body>
