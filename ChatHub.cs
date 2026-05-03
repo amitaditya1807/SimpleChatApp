@@ -8,17 +8,11 @@ namespace ChatServer
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, room);
             await Clients.Group(room)
-                .SendAsync("ReceiveMessage", "System", $"{user} joined {room}", "");
+                .SendAsync("ReceiveMessage", "System", $"{user} joined", "");
         }
 
         public async Task SendMessage(string room, string user, string message, string imageBase64)
         {
-            // 🔒 safety check (approx 3MB base64 limit)
-            if (!string.IsNullOrEmpty(imageBase64) && imageBase64.Length > 4 * 1024 * 1024)
-            {
-                return;
-            }
-
             await Clients.Group(room)
                 .SendAsync("ReceiveMessage", user, message, imageBase64);
         }
@@ -27,7 +21,7 @@ namespace ChatServer
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, room);
             await Clients.Group(room)
-                .SendAsync("ReceiveMessage", "System", $"{user} left {room}", "");
+                .SendAsync("ReceiveMessage", "System", $"{user} left", "");
         }
     }
 }

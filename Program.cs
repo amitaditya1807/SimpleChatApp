@@ -23,6 +23,23 @@ app.UseStaticFiles();
 
 app.MapHub<ChatHub>("/chat");
 
+// Render support
+var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
+app.Urls.Add($"http://0.0.0.0:{port}");
+
+app.Run(); ();
+    });
+});
+
+var app = builder.Build();
+
+app.UseCors();
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+app.MapHub<ChatHub>("/chat");
+
 // Render compatibility
 var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
 app.Urls.Add($"http://0.0.0.0:{port}");
