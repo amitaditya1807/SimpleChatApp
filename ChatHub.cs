@@ -17,13 +17,13 @@ namespace ChatServer
             );
         }
 
-        public async Task SendMessage(string room, string user, string message)
+        public async Task SendMessage(string room, string user, string message, string imageBase64)
         {
             await Clients.Group(room).SendAsync(
                 "ReceiveMessage",
                 user,
                 message,
-                "",
+                imageBase64,
                 DateTime.Now.ToString("hh:mm tt")
             );
         }
